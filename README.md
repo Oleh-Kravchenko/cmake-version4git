@@ -57,3 +57,7 @@ Just add in yours CMakeLists.txt
 	$ cd build
 	$ cmake -Wno-dev -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..
 	$ sudo make install
+
+## Yocto
+
+Please use recipe contrib/yocto/cmake-version4git_git.bb
