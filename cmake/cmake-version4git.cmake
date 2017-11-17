@@ -44,6 +44,11 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 		ERROR_STRIP_TRAILING_WHITESPACE)
 	ENDMACRO()
 
+	MACRO(SET_RESULT name value)
+		SET(PROJECT_${name} ${value} PARENT_SCOPE)
+		SET(${PROJECT_NAME}_${name} ${value} PARENT_SCOPE)
+	ENDMACRO()
+
 	GIT_EXEC(rev-parse --verify HEAD)
 	IF(NOT RES)
 		SET(commit "${COUT}")
@@ -120,52 +125,36 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 					"${COUT}/refs/heads/${branch}")
 		ENDIF()
 	ELSE()
-		MESSAGE(STATUS "There's no Git repository or it's empty!")
-
 		SET(major 0)
 		SET(minor 0)
 		SET(patch 0)
 		SET(dirty 1)
+		MESSAGE(STATUS "There's no Git repository or it's empty!")
 	ENDIF()
 
 	STRING(CONCAT version ${major} "." ${minor} "." ${patch})
 
-	SET(PROJECT_VERSION "${version}" PARENT_SCOPE)
-	SET(PROJECT_VERSION_MAJOR ${major} PARENT_SCOPE)
-	SET(PROJECT_VERSION_MINOR ${minor} PARENT_SCOPE)
-	SET(PROJECT_VERSION_PATCH ${patch} PARENT_SCOPE)
-
-	SET(${PROJECT_NAME}_VERSION "${version}" PARENT_SCOPE)
-	SET(${PROJECT_NAME}_VERSION_MAJOR ${major} PARENT_SCOPE)
-	SET(${PROJECT_NAME}_VERSION_MINOR ${minor} PARENT_SCOPE)
-	SET(${PROJECT_NAME}_VERSION_PATCH ${patch} PARENT_SCOPE)
-
+	SET_RESULT(VERSION "${version}")
+	SET_RESULT(VERSION_MAJOR ${major})
+	SET_RESULT(VERSION_MINOR ${minor})
+	SET_RESULT(VERSION_PATCH ${patch})
 	MESSAGE(STATUS "Set version of ${PROJECT_NAME} to ${version}")
 
-	SET(PROJECT_GIT_DIRTY ${dirty} PARENT_SCOPE)
-	SET(${PROJECT_NAME}_GIT_DIRTY ${dirty} PARENT_SCOPE)
+	SET_RESULT(GIT_DIRTY ${dirty})
 	IF(dirty)
 		MESSAGE(STATUS "There are not commited changes!")
 	ENDIF()
 
 	IF(commit)
-		SET(PROJECT_GIT_COMMIT "${commit}" PARENT_SCOPE)
-		SET(${PROJECT_NAME}_GIT_COMMIT "${commit}" PARENT_SCOPE)
-
+		SET_RESULT(GIT_COMMIT "${commit}")
 		MESSAGE("   Commit: ${commit}")
 
 		IF(branch)
-			SET(PROJECT_GIT_BRANCH "${branch}" PARENT_SCOPE)
-			SET(${PROJECT_NAME}_GIT_BRANCH
-				"${branch}" PARENT_SCOPE)
-
+			SET_RESULT(GIT_BRANCH "${branch}")
 			MESSAGE("   Branch: ${branch}")
 
 			IF(url)
-				SET(PROJECT_GIT_URL "${url}" PARENT_SCOPE)
-				SET(${PROJECT_NAME}_GIT_URL
-					"${url}" PARENT_SCOPE)
-
+				SET_RESULT(GIT_URL "${url}")
 				MESSAGE("      URL: ${url}")
 			ENDIF()
 		ENDIF()
