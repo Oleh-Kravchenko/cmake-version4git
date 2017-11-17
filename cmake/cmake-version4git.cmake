@@ -63,6 +63,14 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 			SET(minor 0)
 			SET(patch ${COUT})
 		ENDIF()
+
+		GIT_EXEC(rev-parse --absolute-git-dir)
+		IF(RES)
+			MESSAGE(FATAL_ERROR "git error: ${CERR}")
+		ENDIF()
+
+		SET_PROPERTY(DIRECTORY APPEND PROPERTY
+				CMAKE_CONFIGURE_DEPENDS "${COUT}/HEAD")
 	ELSE()
 		MESSAGE(STATUS "There's no Git repository or it's empty!")
 
