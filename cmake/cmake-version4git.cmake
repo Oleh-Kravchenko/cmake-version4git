@@ -84,7 +84,9 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 			MESSAGE(FATAL_ERROR "git error: ${CERR}")
 		ENDIF()
 		IF(COUT)
-			SET(dirty TRUE)
+			SET(dirty 1)
+		ELSE()
+			SET(dirty 0)
 		ENDIF()
 
 		GIT_EXEC(symbolic-ref --short HEAD)
@@ -123,7 +125,7 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 		SET(major 0)
 		SET(minor 0)
 		SET(patch 0)
-		SET(dirty TRUE)
+		SET(dirty 1)
 	ENDIF()
 
 	STRING(CONCAT version ${major} "." ${minor} "." ${patch})
@@ -140,10 +142,9 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 
 	MESSAGE(STATUS "Set version of ${PROJECT_NAME} to ${version}")
 
+	SET(PROJECT_GIT_DIRTY ${dirty} PARENT_SCOPE)
+	SET(${PROJECT_NAME}_GIT_DIRTY ${dirty} PARENT_SCOPE)
 	IF(dirty)
-		SET(PROJECT_GIT_DIRTY ${dirty} PARENT_SCOPE)
-		SET(${PROJECT_NAME}_GIT_DIRTY ${dirty} PARENT_SCOPE)
-
 		MESSAGE(STATUS "There are not commited changes!")
 	ENDIF()
 
