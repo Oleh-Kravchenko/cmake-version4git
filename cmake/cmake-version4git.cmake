@@ -10,11 +10,19 @@ FIND_PACKAGE(Git REQUIRED)
 # PROJECT_VERSION_MAJOR
 # PROJECT_VERSION_MINOR
 # PROJECT_VERSION_PATCH
+# PROJECT_GIT_DIRTY
+# PROJECT_GIT_COMMIT
+# PROJECT_GIT_BRANCH
+# PROJECT_GIT_URL
 #
 # <PROJECT_NAME>_VERSION
 # <PROJECT_NAME>_VERSION_MAJOR
 # <PROJECT_NAME>_VERSION_MINOR
 # <PROJECT_NAME>_VERSION_PATCH
+# <PROJECT_NAME>_GIT_DIRTY
+# <PROJECT_NAME>_GIT_COMMIT
+# <PROJECT_NAME>_GIT_BRANCH
+# <PROJECT_NAME>_GIT_URL
 #
 FUNCTION(PROJECT_VERSION_FROM_GIT)
 	SET(GIT_TAG_MATCH "v([0-9]|[1-9][0-9]*)\\."
@@ -36,9 +44,12 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 		ERROR_STRIP_TRAILING_WHITESPACE)
 	ENDMACRO()
 
-	GIT_EXEC(describe --tags)
-	IF(NOT GIT_RES)
-		IF(COUT MATCHES "${GIT_TAG_MATCH}")
+	GIT_EXEC(rev-parse --verify HEAD)
+	IF(NOT RES)
+		SET(commit "${COUT}")
+
+		GIT_EXEC(describe --tags)
+		IF(NOT RES AND COUT MATCHES "${GIT_TAG_MATCH}")
 			SET(major "${CMAKE_MATCH_1}")
 			SET(minor "${CMAKE_MATCH_2}")
 
@@ -48,6 +59,10 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 				SET(patch 0)
 			ENDIF()
 		ELSE()
+			IF(RES)
+				MESSAGE(STATUS "git error: ${CERR}")
+			ENDIF()
+
 			MESSAGE(STATUS
 				"Failed to find suitable tag to define"
 				" version."
@@ -64,6 +79,31 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 			SET(patch ${COUT})
 		ENDIF()
 
+		GIT_EXEC(diff-index --name-only HEAD)
+		IF(RES)
+			MESSAGE(FATAL_ERROR "git error: ${CERR}")
+		ENDIF()
+		IF(COUT)
+			SET(dirty TRUE)
+		ENDIF()
+
+		GIT_EXEC(symbolic-ref --short HEAD)
+		IF(NOT RES)
+			SET(branch "${COUT}")
+
+			GIT_EXEC(config --local
+					--get branch.${branch}.remote)
+			IF(NOT RES)
+				SET(remote "${COUT}")
+
+				GIT_EXEC(config --local
+						--get remote.${remote}.url)
+				IF(NOT RES)
+					SET(url "${COUT}")
+				ENDIF()
+			ENDIF()
+		ENDIF()
+
 		GIT_EXEC(rev-parse --absolute-git-dir)
 		IF(RES)
 			MESSAGE(FATAL_ERROR "git error: ${CERR}")
@@ -71,12 +111,19 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 
 		SET_PROPERTY(DIRECTORY APPEND PROPERTY
 				CMAKE_CONFIGURE_DEPENDS "${COUT}/HEAD")
+
+		IF(branch)
+			SET_PROPERTY(DIRECTORY APPEND PROPERTY
+					CMAKE_CONFIGURE_DEPENDS
+					"${COUT}/refs/heads/${branch}")
+		ENDIF()
 	ELSE()
 		MESSAGE(STATUS "There's no Git repository or it's empty!")
 
 		SET(major 0)
 		SET(minor 0)
 		SET(patch 0)
+		SET(dirty TRUE)
 	ENDIF()
 
 	STRING(CONCAT version ${major} "." ${minor} "." ${patch})
@@ -92,4 +139,34 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 	SET(${PROJECT_NAME}_VERSION_PATCH ${patch} PARENT_SCOPE)
 
 	MESSAGE(STATUS "Set version of ${PROJECT_NAME} to ${version}")
+
+	IF(dirty)
+		SET(PROJECT_GIT_DIRTY ${dirty} PARENT_SCOPE)
+		SET(${PROJECT_NAME}_GIT_DIRTY ${dirty} PARENT_SCOPE)
+
+		MESSAGE(STATUS "There are not commited changes!")
+	ENDIF()
+
+	IF(commit)
+		SET(PROJECT_GIT_COMMIT "${commit}" PARENT_SCOPE)
+		SET(${PROJECT_NAME}_GIT_COMMIT "${commit}" PARENT_SCOPE)
+
+		MESSAGE("   Commit: ${commit}")
+
+		IF(branch)
+			SET(PROJECT_GIT_BRANCH "${branch}" PARENT_SCOPE)
+			SET(${PROJECT_NAME}_GIT_BRANCH
+				"${branch}" PARENT_SCOPE)
+
+			MESSAGE("   Branch: ${branch}")
+
+			IF(url)
+				SET(PROJECT_GIT_URL "${url}" PARENT_SCOPE)
+				SET(${PROJECT_NAME}_GIT_URL
+					"${url}" PARENT_SCOPE)
+
+				MESSAGE("      URL: ${url}")
+			ENDIF()
+		ENDIF()
+	ENDIF()
 ENDFUNCTION()
