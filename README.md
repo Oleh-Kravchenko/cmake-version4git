@@ -2,6 +2,10 @@
 
 Projects version definition with Git tags and CMake.
 
+# Requirements
+
+Your Git repository must be tagged with the following pattern vX.Y
+
 # Example
 
 In CMakeLists.txt:
@@ -10,9 +14,35 @@ In CMakeLists.txt:
 
 	PROJECT_VERSION_FROM_GIT()
 
-Output of CMake generator:
+The following variables will be available:
 
-	-- Set version of hello_world to 0.0.1
+- PROJECT_VERSION       - x.y.z
+- PROJECT_VERSION_MAJOR - x
+- PROJECT_VERSION_MINOR - y
+- PROJECT_VERSION_PATCH - z
+- PROJECT_GIT_DIRTY     - TRUE if your git repositry has not commited changes
+- PROJECT_GIT_COMMIT    - current commit hash
+- PROJECT_GIT_BRANCH    - current branch name
+- PROJECT_GIT_URL       - URL of remote repository
+
+Aliases with <PROJECT_NAME>:
+
+- <PROJECT_NAME>_VERSION
+- <PROJECT_NAME>_VERSION_MAJOR
+- <PROJECT_NAME>_VERSION_MINOR
+- <PROJECT_NAME>_VERSION_PATCH
+- <PROJECT_NAME>_GIT_DIRTY
+- <PROJECT_NAME>_GIT_COMMIT
+- <PROJECT_NAME>_GIT_BRANCH
+- <PROJECT_NAME>_GIT_URL
+
+Example output of CMake generator:
+
+	-- Set version of cmake-version4git to 0.0.10
+	-- There are not commited changes!
+	Commit: e6129a1a75aa433dc50c01a9dbd2c3e5813ecce8
+	Branch: master
+	URL: git@github.com:Oleh-Kravchenko/cmake-version4git.git
 
 # Installation
 
