@@ -142,13 +142,22 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 		SET(dirty 1)
 	ENDIF()
 
+	SET(cflags -DPROJECT_VERSION_MAJOR=${major}
+		-DPROJECT_VERSION_MINOR=${minor}
+		-DPROJECT_VERSION_PATCH=${patch}
+		-DPROJECT_GIT_DIRTY=${dirty})
+
 	STRING(CONCAT version ${major} "." ${minor} "." ${patch})
 	IF(tweak)
 		STRING(CONCAT version "${version}." ${tweak})
 
 		SET(PROJECT_VERSION_TWEAK ${tweak} PARENT_SCOPE)
 		SET(${PROJECT_NAME}_VERSION_TWEAK ${tweak} PARENT_SCOPE)
+
+		LIST(APPEND cflags -DPROJECT_VERSION_TWEAK=${tweak})
 	ENDIF()
+
+	LIST(APPEND cflags -DPROJECT_VERSION="${version}")
 
 	SET(PROJECT_VERSION "${version}" PARENT_SCOPE)
 	SET(PROJECT_VERSION_MAJOR ${major} PARENT_SCOPE)
@@ -178,6 +187,8 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 		SET(${PROJECT_NAME}_GIT_COMMIT "${commit}" PARENT_SCOPE)
 
 		MESSAGE("   Commit: ${short} ${commit}")
+		LIST(APPEND cflags -DPROJECT_GIT_SHORT="${short}"
+			-DPROJECT_GIT_COMMIT="${commit}")
 
 		IF(branch)
 			SET(PROJECT_GIT_BRANCH "${branch}" PARENT_SCOPE)
@@ -185,6 +196,7 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 				"${branch}" PARENT_SCOPE)
 
 			MESSAGE("   Branch: ${branch}")
+			LIST(APPEND cflags -DPROJECT_GIT_BRANCH="${branch}")
 
 			IF(url)
 				SET(PROJECT_GIT_URL "${url}" PARENT_SCOPE)
@@ -192,7 +204,12 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 					"${url}" PARENT_SCOPE)
 
 				MESSAGE("      URL: ${url}")
+				LIST(APPEND cflags
+					-DPROJECT_GIT_URL="${url}")
 			ENDIF()
 		ENDIF()
 	ENDIF()
+
+	SET(PROJECT_VERSION4GIT_CFLAGS "${cflags}" PARENT_SCOPE)
+	SET(${PROJECT_NAME}_VERSION4GIT_CFLAGS "${cflags}" PARENT_SCOPE)
 ENDFUNCTION()
