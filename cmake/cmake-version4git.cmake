@@ -10,7 +10,9 @@ FIND_PACKAGE(Git REQUIRED)
 # PROJECT_VERSION_MAJOR
 # PROJECT_VERSION_MINOR
 # PROJECT_VERSION_PATCH
+# PROJECT_VERSION_TWEAK
 # PROJECT_GIT_DIRTY
+# PROJECT_GIT_SHORT
 # PROJECT_GIT_COMMIT
 # PROJECT_GIT_BRANCH
 # PROJECT_GIT_URL
@@ -19,14 +21,18 @@ FIND_PACKAGE(Git REQUIRED)
 # <PROJECT_NAME>_VERSION_MAJOR
 # <PROJECT_NAME>_VERSION_MINOR
 # <PROJECT_NAME>_VERSION_PATCH
+# <PROJECT_NAME>_VERSION_TWEAK
 # <PROJECT_NAME>_GIT_DIRTY
+# <PROJECT_NAME>_GIT_SHORT
 # <PROJECT_NAME>_GIT_COMMIT
 # <PROJECT_NAME>_GIT_BRANCH
 # <PROJECT_NAME>_GIT_URL
 #
 FUNCTION(PROJECT_VERSION_FROM_GIT)
-	STRING(CONCAT GIT_TAG_MATCH "v([0-9]|[1-9][0-9]*)\\."
-		"([0-9]|[1-9][0-9]*)(-([1-9][0-9]*)-g[0-9a-f]+)?")
+	STRING(CONCAT GIT_TAG_MATCH "v([0-9]|[1-9][0-9]*)"
+		"\\.([0-9]|[1-9][0-9]*)"
+		"(\\.([0-9]|[1-9][0-9]*))?"
+		"(-([1-9][0-9]*)-g[0-9a-f]+)?")
 
 	MACRO(GIT_EXEC)
 		EXECUTE_PROCESS(
@@ -59,7 +65,15 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 			SET(minor "${CMAKE_MATCH_2}")
 
 			IF(CMAKE_MATCH_4)
+				# tag matches to this pattern vX.Y.Z
 				SET(patch "${CMAKE_MATCH_4}")
+
+				IF(CMAKE_MATCH_6)
+					SET(tweak "${CMAKE_MATCH_6}")
+				ENDIF()
+			ELSEIF(CMAKE_MATCH_6)
+				# tag matches to this pattern vX.Y
+				SET(patch "${CMAKE_MATCH_6}")
 			ELSE()
 				SET(patch 0)
 			ENDIF()
@@ -132,7 +146,19 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 		MESSAGE(STATUS "There's no Git repository or it's empty!")
 	ENDIF()
 
+	SET(cflags -DPROJECT_VERSION_MAJOR=${major}
+		-DPROJECT_VERSION_MINOR=${minor}
+		-DPROJECT_VERSION_PATCH=${patch}
+		-DPROJECT_GIT_DIRTY=${dirty})
+
 	STRING(CONCAT version ${major} "." ${minor} "." ${patch})
+	IF(tweak)
+		STRING(CONCAT version "${version}." ${tweak})
+		SET_RESULT(VERSION_TWEAK ${tweak})
+		LIST(APPEND cflags -DPROJECT_VERSION_TWEAK=${tweak})
+	ENDIF()
+
+	LIST(APPEND cflags -DPROJECT_VERSION="${version}")
 
 	SET_RESULT(VERSION "${version}")
 	SET_RESULT(VERSION_MAJOR ${major})
@@ -146,17 +172,28 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 	ENDIF()
 
 	IF(commit)
+		STRING(SUBSTRING "${commit}" 0 7 short)
+
+		SET_RESULT(GIT_SHORT "${short}")
 		SET_RESULT(GIT_COMMIT "${commit}")
-		MESSAGE("   Commit: ${commit}")
+
+		MESSAGE("   Commit: ${short} ${commit}")
+		LIST(APPEND cflags -DPROJECT_GIT_SHORT="${short}"
+			-DPROJECT_GIT_COMMIT="${commit}")
 
 		IF(branch)
 			SET_RESULT(GIT_BRANCH "${branch}")
 			MESSAGE("   Branch: ${branch}")
+			LIST(APPEND cflags -DPROJECT_GIT_BRANCH="${branch}")
 
 			IF(url)
 				SET_RESULT(GIT_URL "${url}")
 				MESSAGE("      URL: ${url}")
+				LIST(APPEND cflags
+					-DPROJECT_GIT_URL="${url}")
 			ENDIF()
 		ENDIF()
 	ENDIF()
+
+	SET_RESULT(VERSION4GIT_CFLAGS "${cflags}")
 ENDFUNCTION()
