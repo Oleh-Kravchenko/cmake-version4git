@@ -61,6 +61,7 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 
 		GIT_EXEC(describe --tags)
 		IF(NOT RES AND COUT MATCHES "^${GIT_TAG_MATCH}$")
+			SET(reason "from tag ${COUT}")
 			SET(major "${CMAKE_MATCH_1}")
 			SET(minor "${CMAKE_MATCH_2}")
 
@@ -78,12 +79,7 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 				SET(patch 0)
 			ENDIF()
 		ELSE()
-			IF(RES)
-				MESSAGE(STATUS "git error: ${CERR}")
-			ENDIF()
-
-			MESSAGE(STATUS
-				"Failed to find suitable tag to define"
+			MESSAGE("!! Failed to find suitable tag to define"
 				" version."
 				" Project should be tagged using 'vX.Y'"
 				" pattern (e.g. 'v0.1')")
@@ -93,6 +89,7 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 				MESSAGE(FATAL_ERROR "git error: ${CERR}")
 			ENDIF()
 
+			SET(reason "because commit counter is '${COUT}'")
 			SET(major 0)
 			SET(minor 0)
 			SET(patch ${COUT})
@@ -139,11 +136,13 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 					"${COUT}/refs/heads/${branch}")
 		ENDIF()
 	ELSE()
+		STRING(CONCAT reason "because there's no Git repository"
+			" in '${PROJECT_SOURCE_DIR}' or it's empty!")
+
 		SET(major 0)
 		SET(minor 0)
 		SET(patch 0)
 		SET(dirty 1)
-		MESSAGE(STATUS "There's no Git repository or it's empty!")
 	ENDIF()
 
 	SET(cflags -DPROJECT_VERSION_MAJOR=${major}
@@ -164,11 +163,13 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 	SET_RESULT(VERSION_MAJOR ${major})
 	SET_RESULT(VERSION_MINOR ${minor})
 	SET_RESULT(VERSION_PATCH ${patch})
-	MESSAGE(STATUS "Set version of ${PROJECT_NAME} to ${version}")
+
+	MESSAGE(STATUS "Set version of ${PROJECT_NAME} to ${version},"
+		" ${reason}")
 
 	SET_RESULT(GIT_DIRTY ${dirty})
 	IF(dirty)
-		MESSAGE(STATUS "There are not commited changes!")
+		MESSAGE("!! There are not commited changes")
 	ENDIF()
 
 	IF(commit)
