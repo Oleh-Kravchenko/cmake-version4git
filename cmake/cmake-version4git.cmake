@@ -29,10 +29,10 @@ FIND_PACKAGE(Git REQUIRED)
 # <PROJECT_NAME>_GIT_URL
 #
 FUNCTION(PROJECT_VERSION_FROM_GIT)
-	STRING(CONCAT GIT_TAG_MATCH "v([0-9]|[1-9][0-9]*)"
-		"\\.([0-9]|[1-9][0-9]*)"
-		"(\\.([0-9]|[1-9][0-9]*))?"
-		"(-([1-9][0-9]*)-g[0-9a-f]+)?")
+	SET(GIT_TAG_MATCH "v([0-9]|[1-9][0-9]*)")
+	SET(GIT_TAG_MATCH "${GIT_TAG_MATCH}\\.([0-9]|[1-9][0-9]*)")
+	SET(GIT_TAG_MATCH "${GIT_TAG_MATCH}(\\.([0-9]|[1-9][0-9]*))?")
+	SET(GIT_TAG_MATCH "${GIT_TAG_MATCH}(-([1-9][0-9]*)-g[0-9a-f]+)?")
 
 	MACRO(GIT_EXEC)
 		EXECUTE_PROCESS(
@@ -136,8 +136,8 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 					"${COUT}/refs/heads/${branch}")
 		ENDIF()
 	ELSE()
-		STRING(CONCAT reason "because there's no Git repository"
-			" in '${PROJECT_SOURCE_DIR}' or it's empty!")
+		SET(reason "because there's no Git repository")
+		SET(reason "${reason} in '${PROJECT_SOURCE_DIR}' or it's empty!")
 
 		SET(major 0)
 		SET(minor 0)
@@ -150,9 +150,9 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 		-DPROJECT_VERSION_PATCH=${patch}
 		-DPROJECT_GIT_DIRTY=${dirty})
 
-	STRING(CONCAT version ${major} "." ${minor} "." ${patch})
+	SET(version "${major}.${minor}.${patch}")
 	IF(tweak)
-		STRING(CONCAT version "${version}." ${tweak})
+		SET(version "${version}.${tweak}")
 		SET_RESULT(VERSION_TWEAK ${tweak})
 		LIST(APPEND cflags -DPROJECT_VERSION_TWEAK=${tweak})
 	ENDIF()

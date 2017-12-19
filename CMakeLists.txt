@@ -1,6 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
-PROJECT(cmake-version4git LANGUAGES NONE)
+PROJECT(cmake-version4git NONE)
 
 INCLUDE(CMakePackageConfigHelpers)
 INCLUDE(GNUInstallDirs)
