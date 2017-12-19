@@ -6,6 +6,10 @@ Projects version definition with Git tags and CMake.
 
 Your Git repository must be tagged with the following pattern vX.Y
 
+# Continuous Integration
+
+- Travis CI [![build status](https://api.travis-ci.org/Oleh-Kravchenko/cmake-version4git.svg)](https://travis-ci.org/Oleh-Kravchenko/cmake-version4git)
+
 # Example
 
 In CMakeLists.txt:
