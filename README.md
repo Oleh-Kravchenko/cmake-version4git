@@ -9,6 +9,7 @@ Your Git repository must be tagged with the following pattern vX.Y
 # Continuous Integration
 
 - Travis CI [![build status](https://api.travis-ci.org/Oleh-Kravchenko/cmake-version4git.svg)](https://travis-ci.org/Oleh-Kravchenko/cmake-version4git)
+- Coverage [![Coverage Status](https://coveralls.io/repos/github/Oleh-Kravchenko/cmake-version4git/badge.svg?branch=master)](https://coveralls.io/github/Oleh-Kravchenko/cmake-version4git?branch=master)
 
 # Example
 
