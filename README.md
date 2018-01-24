@@ -57,30 +57,15 @@ Example output of CMake generator:
 	$ layman -a kaa
 	$ emerge dev-util/cmake-version4git -a
 
-## Download and install by CMake
+## Use as git submodule
 
-Just add in yours CMakeLists.txt
+Add submodule
 
-	INCLUDE(ExternalProject)
+	git submodule add https://github.com/Oleh-Kravchenko/cmake-version4git.git 3rdparty/cmake-version4git
 
-	EXTERNALPROJECT_ADD(cmake-version4git
-	GIT_REPOSITORY
-		https://github.com/Oleh-Kravchenko/cmake-version4git.git
-	CMAKE_ARGS
-		-DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
-		-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-		-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
-		-DCMAKE_INSTALL_BINDIR:PATH=${CMAKE_INSTALL_BINDIR}
-		-DCMAKE_INSTALL_SBINDIR:PATH=${CMAKE_INSTALL_SBINDIR}
-		-DCMAKE_INSTALL_LIBEXECDIR:PATH=${CMAKE_INSTALL_LIBEXECDIR}
-		-DCMAKE_INSTALL_SYSCONFDIR:PATH=${CMAKE_INSTALL_SYSCONFDIR}
-		-DCMAKE_INSTALL_SHAREDSTATEDIR:PATH=${CMAKE_INSTALL_SHAREDSTATEDIR}
-		-DCMAKE_INSTALL_LOCALSTATEDIR:PATH=${CMAKE_INSTALL_LOCALSTATEDIR}
-		-DCMAKE_INSTALL_LIBDIR:PATH=${CMAKE_INSTALL_LIBDIR}
-		-DCMAKE_INSTALL_INCLUDEDIR:PATH=${CMAKE_INSTALL_INCLUDEDIR}
-		-DCMAKE_INSTALL_DATAROOTDIR:PATH=${CMAKE_INSTALL_DATAROOTDIR})
+Add into your CMakeLists.txt file
 
-	FIND_PACKAGE(cmake-version4git REQUIRED)
+	INCLUDE(3rdparty/cmake-version4git/cmake/cmake-version4git.cmake)
 
 	PROJECT_VERSION_FROM_GIT()
 
