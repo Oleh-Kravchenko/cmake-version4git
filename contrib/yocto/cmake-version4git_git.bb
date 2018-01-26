@@ -13,11 +13,11 @@ S = "${WORKDIR}/git"
 
 inherit allarch cmake
 
-DEPENDS += " git-native"
+DEPENDS += "git-native"
 PACKAGES = "${PN}-dev"
 RDEPENDS_${PN}-dev = "${PN}-dev"
 
-FILES_${PN}-dev += " ${libdir}/cmake"
+FILES_${PN}-dev += "${libdir}/cmake"
 
 # by default git-native is provided by host system, please see bitbake.conf
-EXTRA_OECMAKE += "${@bb.utils.contains('ASSUME_PROVIDED', 'git-native', ' -DGIT_EXECUTABLE=/usr/bin/git', '', d)}"
+EXTRA_OECMAKE += "${@bb.utils.contains('ASSUME_PROVIDED', 'git-native', '-DGIT_EXECUTABLE=/usr/bin/git', '', d)}"
