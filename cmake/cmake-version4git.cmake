@@ -65,14 +65,14 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 			SET(major "${CMAKE_MATCH_1}")
 			SET(minor "${CMAKE_MATCH_2}")
 
-			IF(CMAKE_MATCH_4)
+			IF(DEFINED CMAKE_MATCH_4)
 				# tag matches to this pattern vX.Y.Z
 				SET(patch "${CMAKE_MATCH_4}")
 
-				IF(CMAKE_MATCH_6)
+				IF(DEFINED CMAKE_MATCH_6)
 					SET(tweak "${CMAKE_MATCH_6}")
 				ENDIF()
-			ELSEIF(CMAKE_MATCH_6)
+			ELSEIF(DEFINED CMAKE_MATCH_6)
 				# tag matches to this pattern vX.Y
 				SET(patch "${CMAKE_MATCH_6}")
 			ELSE()
