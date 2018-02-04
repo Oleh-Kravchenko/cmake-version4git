@@ -29,6 +29,13 @@ FIND_PACKAGE(Git REQUIRED)
 # <PROJECT_NAME>_GIT_URL
 #
 FUNCTION(PROJECT_VERSION_FROM_GIT)
+	# to avoid conflicts with parent scope unset variables
+	UNSET(branch)
+	UNSET(commit)
+	UNSET(dirty)
+	UNSET(tweak)
+	UNSET(url)
+
 	SET(GIT_TAG_MATCH "v([0-9]|[1-9][0-9]*)")
 	SET(GIT_TAG_MATCH "${GIT_TAG_MATCH}\\.([0-9]|[1-9][0-9]*)")
 	SET(GIT_TAG_MATCH "${GIT_TAG_MATCH}(\\.([0-9]|[1-9][0-9]*))?")
@@ -99,10 +106,10 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 		IF(RES)
 			MESSAGE(FATAL_ERROR "git error: ${CERR}")
 		ENDIF()
-		IF(COUT)
-			SET(dirty 1)
-		ELSE()
+		IF(COUT STREQUAL "")
 			SET(dirty 0)
+		ELSE()
+			SET(dirty 1)
 		ENDIF()
 
 		GIT_EXEC(symbolic-ref --short HEAD)
@@ -130,7 +137,7 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 		SET_PROPERTY(DIRECTORY APPEND PROPERTY
 				CMAKE_CONFIGURE_DEPENDS "${COUT}/HEAD")
 
-		IF(branch)
+		IF(DEFINED branch)
 			SET_PROPERTY(DIRECTORY APPEND PROPERTY
 					CMAKE_CONFIGURE_DEPENDS
 					"${COUT}/refs/heads/${branch}")
@@ -151,7 +158,7 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 		-DPROJECT_GIT_DIRTY=${dirty})
 
 	SET(version "${major}.${minor}.${patch}")
-	IF(tweak)
+	IF(DEFINED tweak)
 		SET(version "${version}.${tweak}")
 		SET_RESULT(VERSION_TWEAK ${tweak})
 		LIST(APPEND cflags -DPROJECT_VERSION_TWEAK=${tweak})
@@ -172,7 +179,7 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 		MESSAGE("!! There are not commited changes")
 	ENDIF()
 
-	IF(commit)
+	IF(DEFINED commit)
 		STRING(SUBSTRING "${commit}" 0 7 short)
 
 		SET_RESULT(GIT_SHORT "${short}")
@@ -182,12 +189,12 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 		LIST(APPEND cflags -DPROJECT_GIT_SHORT="${short}"
 			-DPROJECT_GIT_COMMIT="${commit}")
 
-		IF(branch)
+		IF(DEFINED branch)
 			SET_RESULT(GIT_BRANCH "${branch}")
 			MESSAGE("   Branch: ${branch}")
 			LIST(APPEND cflags -DPROJECT_GIT_BRANCH="${branch}")
 
-			IF(url)
+			IF(DEFINED url)
 				SET_RESULT(GIT_URL "${url}")
 				MESSAGE("      URL: ${url}")
 				LIST(APPEND cflags
