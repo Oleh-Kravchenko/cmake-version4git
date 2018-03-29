@@ -91,7 +91,7 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 				" Project should be tagged using 'vX.Y'"
 				" pattern (e.g. 'v0.1')")
 
-			GIT_EXEC(rev-list --all --count)
+			GIT_EXEC(rev-list --count HEAD)
 			IF(RES)
 				MESSAGE(FATAL_ERROR "git error: ${CERR}")
 			ENDIF()
