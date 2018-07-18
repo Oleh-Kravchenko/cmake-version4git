@@ -3,7 +3,7 @@ IF(NOT (Git_FOUND OR GIT_FOUND))
 ENDIF()
 
 #
-# PROJECT_VERSION_FROM_GIT()
+# PROJECT_VERSION_FROM_GIT([PROJECT_SOURCE_DIR])
 #
 # Sets project version from git tags.
 # This function exports the following variables to parent scope:
@@ -40,6 +40,10 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 	UNSET(remote)
 	UNSET(tweak)
 	UNSET(url)
+
+	IF(ARGV0)
+		SET(PROJECT_SOURCE_DIR "${ARGV0}")
+	ENDIF()
 
 	SET(GIT_TAG_MATCH "v([0-9]|[1-9][0-9]*)")
 	SET(GIT_TAG_MATCH "${GIT_TAG_MATCH}\\.([0-9]|[1-9][0-9]*)")

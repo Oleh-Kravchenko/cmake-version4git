@@ -18,6 +18,8 @@ In CMakeLists.txt:
 	FIND_PACKAGE(cmake-version4git REQUIRED)
 
 	PROJECT_VERSION_FROM_GIT()
+	# or if your project sources in another directory
+	# PROJECT_VERSION_FROM_GIT(${CMAKE_CURRENT_SOURCE_DIR}/fancylibrary)
 
 The following variables will be available:
 
