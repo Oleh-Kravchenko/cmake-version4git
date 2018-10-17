@@ -23,15 +23,18 @@ In CMakeLists.txt:
 
 The following variables will be available:
 
-- PROJECT_VERSION       - x.y.z[.n]
-- PROJECT_VERSION_MAJOR - x
-- PROJECT_VERSION_MINOR - y
-- PROJECT_VERSION_PATCH - z
-- PROJECT_VERSION_TWEAK - n is defined only, if tag follow pattern vX.Y.Z
-- PROJECT_GIT_DIRTY     - TRUE if your git repositry has not commited changes
-- PROJECT_GIT_COMMIT    - current commit hash
-- PROJECT_GIT_BRANCH    - current branch name
-- PROJECT_GIT_URL       - URL of remote repository
+- PROJECT_VERSION            - x.y.z[.n]
+- PROJECT_VERSION_MAJOR      - x
+- PROJECT_VERSION_MINOR      - y
+- PROJECT_VERSION_PATCH      - z
+- PROJECT_VERSION_TWEAK      - n is defined only, if tag follow pattern vX.Y.Z
+- PROJECT_GIT_DIRTY          - TRUE if your git repositry has not commited changes
+- PROJECT_GIT_COMMIT         - current commit hash
+- PROJECT_GIT_BRANCH         - current branch name
+- PROJECT_GIT_URL            - URL of remote repository
+- PROJECT_GIT_REMOTE         - name of 'remote'
+- PROJECT_GIT_SHORT          - current commit short hash
+- PROJECT_VERSION4GIT_CFLAGS - all cmake-version4git's variables in C/C++ definitions
 
 Aliases with <PROJECT_NAME>:
 
@@ -44,6 +47,9 @@ Aliases with <PROJECT_NAME>:
 - <PROJECT_NAME>_GIT_COMMIT
 - <PROJECT_NAME>_GIT_BRANCH
 - <PROJECT_NAME>_GIT_URL
+- <PROJECT_NAME>_GIT_REMOTE
+- <PROJECT_NAME>_GIT_SHORT
+- <PROJECT_NAME>_VERSION4GIT_CFLAGS
 
 Example output of CMake generator:
 
