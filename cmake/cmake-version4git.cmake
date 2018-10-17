@@ -119,6 +119,13 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 		ENDIF()
 		IF(COUT STREQUAL "")
 			SET(dirty 0)
+
+			# set SOURCE_DATE_EPOCH if source code is committed
+			GIT_EXEC(log --format=%ct -1)
+			IF(RES)
+				MESSAGE(FATAL_ERROR "git error: ${CERR}")
+			ENDIF()
+			SET(ENV{SOURCE_DATE_EPOCH} "${COUT}")
 		ELSE()
 			SET(dirty 1)
 		ENDIF()
