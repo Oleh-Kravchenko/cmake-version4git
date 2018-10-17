@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=f967ca707a6df9d1e6b584c85f4d8779"
 
 PV = "git${SRCPV}"
 SRCREV = "${AUTOREV}"
-SRC_URI = "git://github.com/Oleh-Kravchenko/cmake-version4git.git;protocol=https"
+SRC_URI = "gitsm://github.com/Oleh-Kravchenko/cmake-version4git.git;protocol=https"
 S = "${WORKDIR}/git"
 
 inherit allarch cmake
