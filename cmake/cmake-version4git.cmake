@@ -20,6 +20,7 @@ ENDIF()
 # PROJECT_GIT_BRANCH
 # PROJECT_GIT_URL
 # PROJECT_VERSION4GIT_CFLAGS
+# PROJECT_COMMITTER_DATE
 #
 # <PROJECT_NAME>_VERSION
 # <PROJECT_NAME>_VERSION_MAJOR
@@ -33,6 +34,7 @@ ENDIF()
 # <PROJECT_NAME>_GIT_BRANCH
 # <PROJECT_NAME>_GIT_URL
 # <PROJECT_NAME>_VERSION4GIT_CFLAGS
+# <PROJECT_NAME>_COMMITTER_DATE
 #
 FUNCTION(PROJECT_VERSION_FROM_GIT)
 	# to avoid conflicts with parent scope unset variables
@@ -42,6 +44,7 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 	UNSET(remote)
 	UNSET(tweak)
 	UNSET(url)
+	UNSET(committer_date)
 
 	IF(ARGV0)
 		SET(PROJECT_SOURCE_DIR "${ARGV0}")
@@ -119,13 +122,6 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 		ENDIF()
 		IF(COUT STREQUAL "")
 			SET(dirty 0)
-
-			# set SOURCE_DATE_EPOCH if source code is committed
-			GIT_EXEC(log --format=%ct -1)
-			IF(RES)
-				MESSAGE(FATAL_ERROR "git error: ${CERR}")
-			ENDIF()
-			SET(ENV{SOURCE_DATE_EPOCH} "${COUT}")
 		ELSE()
 			SET(dirty 1)
 		ENDIF()
@@ -160,6 +156,12 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 					CMAKE_CONFIGURE_DEPENDS
 					"${COUT}/refs/heads/${branch}")
 		ENDIF()
+
+		GIT_EXEC(log --format=%ct -1)
+		IF(RES)
+			MESSAGE(FATAL_ERROR "git error: ${CERR}")
+		ENDIF()
+		SET(committer_date "${COUT}")
 	ELSE()
 		SET(reason "because there's no Git repository")
 		SET(reason "${reason} in '${PROJECT_SOURCE_DIR}' or it's empty!")
@@ -203,27 +205,38 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 		SET_RESULT(GIT_SHORT "${short}")
 		SET_RESULT(GIT_COMMIT "${commit}")
 
-		MESSAGE("   Commit: ${short} ${commit}")
+		MESSAGE("       Commit: ${short} ${commit}")
 		LIST(APPEND cflags -DPROJECT_GIT_SHORT="${short}"
 			-DPROJECT_GIT_COMMIT="${commit}")
 
 		IF(DEFINED branch)
 			SET_RESULT(GIT_BRANCH "${branch}")
-			MESSAGE("   Branch: ${branch}")
+			MESSAGE("       Branch: ${branch}")
 			LIST(APPEND cflags -DPROJECT_GIT_BRANCH="${branch}")
 
 			IF(DEFINED remote)
 				SET_RESULT(GIT_REMOTE "${remote}")
-				MESSAGE("   Remote: ${remote}")
+				MESSAGE("       Remote: ${remote}")
 				LIST(APPEND cflags
 					-DPROJECT_GIT_REMOTE="${remote}")
 			ENDIF()
 
 			IF(DEFINED url)
 				SET_RESULT(GIT_URL "${url}")
-				MESSAGE("      URL: ${url}")
+				MESSAGE("          URL: ${url}")
 				LIST(APPEND cflags
 					-DPROJECT_GIT_URL="${url}")
+			ENDIF()
+		ENDIF()
+
+		IF(DEFINED committer_date)
+			SET_RESULT(COMMITTER_DATE "${committer_date}")
+			MESSAGE("Commiter date: ${committer_date}")
+			LIST(APPEND cflags
+				-DPROJECT_COMMITTER_DATE="${committer_date}")
+
+			IF(NOT dirty)
+				SET(ENV{SOURCE_DATE_EPOCH} "${committer_date}")
 			ENDIF()
 		ENDIF()
 	ENDIF()

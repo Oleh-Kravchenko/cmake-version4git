@@ -35,6 +35,7 @@ The following variables will be available:
 - PROJECT_GIT_REMOTE         - name of 'remote'
 - PROJECT_GIT_SHORT          - current commit short hash
 - PROJECT_VERSION4GIT_CFLAGS - all cmake-version4git's variables in C/C++ definitions
+- PROJECT_COMMITTER_DATE     - committer date, UNIX timestamp
 
 Aliases with <PROJECT_NAME>:
 
@@ -50,6 +51,7 @@ Aliases with <PROJECT_NAME>:
 - <PROJECT_NAME>_GIT_REMOTE
 - <PROJECT_NAME>_GIT_SHORT
 - <PROJECT_NAME>_VERSION4GIT_CFLAGS
+- <PROJECT_NAME>_COMMITTER_DATE
 
 Example output of CMake generator:
 
