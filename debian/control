@@ -1,0 +1,11 @@
+Source: cmake-version4git
+Section: devel
+Priority: optional
+Maintainer: Oleh Kravchenko <oleg@kaa.org.ua>
+Build-Depends: cmake, git
+Homepage: https://gitlab.com/Oleh-Kravchenko/cmake-version4git
+
+Package: cmake-version4git
+Architecture: all
+Depends: cmake, git
+Description: Projects version definition with Git tags and CMake

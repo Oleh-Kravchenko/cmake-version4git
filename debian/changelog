@@ -1,0 +1,5 @@
+cmake-version4git (0.5.2) experimental; urgency=low
+
+  * Initial release
+
+ -- Oleh Kravchenko <oleg@kaa.org.ua>  Tue, 20 Nov 2018 17:07:46 +0200
