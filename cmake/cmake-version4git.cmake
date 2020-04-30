@@ -200,7 +200,7 @@ FUNCTION(PROJECT_VERSION_FROM_GIT)
 
 	SET_RESULT(GIT_DIRTY ${dirty})
 	IF(dirty)
-		MESSAGE("!! There are not commited changes")
+		MESSAGE("!! There are uncommitted changes!")
 	ENDIF()
 
 	IF(DEFINED commit)
